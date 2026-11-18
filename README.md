@@ -10,6 +10,7 @@
 | ai-movie-generator | AI 电影生成器，支持剧本分析、角色设计、分镜生成、视频拼接全流程，5个Agent协作 |
 | adsflow | 广告爆款裂变工作流，输入长广告视频+替换图片+替换要求，自动完成视频切片、VLM图片识别、Seedance 2.0视频生成、视频对比检查、视频拼接 |
 | ui-tester | UI自动化测试技能，通过Playwright导航截图，VLM分析视觉信息，与UI需求对比发现差异，输出修复建议并持续迭代 |
+| [gzh-design-skill](gzh-design-skill/) | 微信公众号图文排版，支持主题组件、富文本复制预览和 HTML 兼容校验 |
 | 更多技能持续更新中... | |
 
 ---
