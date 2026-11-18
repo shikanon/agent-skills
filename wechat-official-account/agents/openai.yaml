@@ -1,0 +1,4 @@
+interface:
+  display_name: "微信公众号 Skill"
+  short_description: "将 Markdown 排成微信公众号图文，支持主题、预览和 HTML 结构校验"
+  default_prompt: "用 $wechat-official-account 给这篇 Markdown 排版，生成公众号正文和可复制预览。"

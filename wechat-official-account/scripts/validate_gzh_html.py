@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """微信公众号 HTML 合规校验器。
 
+2026-11-18 微信公众号 Skill 增加叶子节点结构和活动内容检查。
+
 把 SKILL.md 里"必须遵守的平台限制"从模型自觉变成确定性兜底。
 排版生成后必跑：检查禁用标签/属性/样式，并核查文字节点是否用
 <span leaf=""> 包裹（公众号编辑器粘贴后保持样式的关键）。
@@ -39,6 +41,13 @@ FORBIDDEN = [
 
 CJK = re.compile(r"[一-鿿㐀-䶿]")
 SKIP_TAGS = {"head", "title", "style", "script"}  # 不参与公众号正文粘贴的区域
+VOID_TAGS = {"area", "base", "br", "col", "embed", "hr", "img", "input",
+             "link", "meta", "param", "source", "track", "wbr"}
+BLOCK_TAGS = {"article", "aside", "blockquote", "div", "dl", "figure",
+              "figcaption", "footer", "header", "hr", "main", "nav", "ol",
+              "p", "pre", "section", "table", "ul", "li", "tr", "td", "th",
+              "h1", "h2", "h3", "h4", "h5", "h6"}
+ACTIVE_TAGS = {"iframe", "object", "embed", "form", "input", "button"}
 # 中文字后紧跟半角逗号/分号/叹号/问号（应改全角）；只查"中文在前"避免中英混排误伤
 HALF_PUNCT = re.compile(r"[一-鿿㐀-䶿][,;!?]")
 ASCII_QUOTE = re.compile(r"[\"']")
@@ -65,14 +74,25 @@ class LeafChecker(HTMLParser):
         self.unwrapped = []       # (文本片段, 父标签) —— 未被 leaf 包裹的中文文本
         self.half_punct = []      # 正文里疑似半角标点的片段
         self.gradient_backgrounds = []  # (行, 列, 标签) —— 内联渐变背景
+        self.structure_errors = []
 
     def handle_starttag(self, tag, attrs):
         ad = dict(attrs)
         style = ad.get("style", "") or ""
+        line, col = self.getpos()
+        location = f"第 {line} 行 {col + 1} 列 <{tag}>"
+        if self.leaf_depth and tag in BLOCK_TAGS:
+            self.structure_errors.append(f"{location}：块级标签应放在 span[leaf] 外")
+        if tag in ACTIVE_TAGS:
+            self.structure_errors.append(f"{location}：正文主题不接受此标签，请使用平台原生组件")
+        events = [key for key in ad if key.startswith("on")]
+        if events:
+            self.structure_errors.append(f"{location}：移除事件属性 {', '.join(events)}")
         if tag not in SKIP_TAGS and not any(t in SKIP_TAGS for t, _, _ in self.stack):
             if GRADIENT_BACKGROUND.search(CSS_NON_FUNCTION.sub("", style)):
-                line, col = self.getpos()
                 self.gradient_backgrounds.append((line, col + 1, tag))
+        if tag in VOID_TAGS:
+            return
         is_leaf = tag == "span" and "leaf" in ad
         is_code = bool(CODE_STYLE.search(style))
         if is_leaf:
@@ -83,6 +103,8 @@ class LeafChecker(HTMLParser):
         self.stack.append((tag, is_leaf, is_code))
 
     def handle_endtag(self, tag):
+        if tag in VOID_TAGS:
+            return
         for i in range(len(self.stack) - 1, -1, -1):
             if self.stack[i][0] == tag:
                 for _, was_leaf, was_code in self.stack[i:]:
@@ -123,6 +145,7 @@ def validate(html, name="<input>"):
         checker.feed(html)
     except Exception as e:  # 容错：解析失败不致命，只提示
         warnings.append(f"HTML 解析中断: {e}")
+    errors.extend(checker.structure_errors)
 
     if checker.gradient_backgrounds:
         sample = "；".join(f"第 {line} 行 {col} 列 <{tag}>"

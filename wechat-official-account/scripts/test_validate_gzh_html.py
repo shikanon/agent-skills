@@ -1,4 +1,4 @@
-"""Regression for issue #21; run with unittest discovery or this file directly."""
+"""上游渐变背景回归与微信公众号 Skill 的正文结构用例。"""
 import subprocess
 import sys
 import unittest
@@ -75,6 +75,22 @@ class GradientBackgroundTests(unittest.TestCase):
                     text=True, encoding="utf-8", capture_output=True, check=False)
                 self.assertEqual(result.returncode, expected, result.stdout)
                 self.assertIn(WARNING_ID, result.stdout)
+
+
+class ArticleStructureTests(unittest.TestCase):
+    def test_wechat_leaf_structure(self):
+        valid = '<section><p><span leaf="">正文<br><img src="image.png"></span></p></section>'
+        self.assertEqual(validate(valid), ([], [], 1))
+        invalid = '<section><span leaf=""><p>正文</p></span></section>'
+        self.assertTrue(any("块级标签" in error for error in validate(invalid)[0]))
+
+    def test_active_content_in_markup(self):
+        source = '<section onclick="run()"><iframe></iframe><span leaf="">正文</span></section>'
+        errors, _, _ = validate(source)
+        self.assertTrue(any("onclick" in error for error in errors))
+        self.assertTrue(any("<iframe>" in error for error in errors))
+        code = '<section><span leaf="">&lt;iframe onclick="run()"&gt;</span></section>'
+        self.assertEqual(validate(code), ([], [], 1))
 
 
 if __name__ == "__main__":

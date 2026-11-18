@@ -1,6 +1,6 @@
-# 公众号图文排版 Skill
+# 微信公众号 Skill
 
-上游把主题设计拆成引言、分节标题、引用、图片、代码块等内联 HTML 组件。Agent 根据文稿结构匹配组件，源组件和已排正文分别校验，最后给出正文片段和可复制预览。
+将 Markdown 或已整理的文稿转换为公众号富文本和可复制预览。沿用上游源码的内联 HTML 组件与两阶段校验，主题负责引言、分节标题、引用、图片和代码块的样式。
 
 沿用上游六套主题，新增四套。分节标题和导语结构各有区别。可下载并打开[四套主题对照页](assets/theme-previews/extended-themes.html)，用同一篇示例比较。
 
@@ -15,4 +15,4 @@
 
 ## 上游和许可
 
-这份修改基于 [甲木与摸鱼小李的 gzh-design-skill](https://github.com/isjiamu/gzh-design-skill/tree/750a50dffdc4abb5e853b98136dad13a57e64ce3)。2026-11-18 增加四套主题，调整 Skill 入口和主题选择，补充兼容文档及主题预览。此目录继续使用 [AGPL-3.0-or-later](LICENSE)，保留原作者版权。
+这份修改基于 [甲木与摸鱼小李的 gzh-design-skill](https://github.com/isjiamu/gzh-design-skill/tree/750a50dffdc4abb5e853b98136dad13a57e64ce3)。2026-11-18 增加四套主题，补充正文结构、视频号草稿检查和主题预览，并扩展源码校验器，检查块级元素混入文字叶子节点以及脚本事件属性。此目录继续使用 [AGPL-3.0-or-later](LICENSE)，保留原作者版权。
