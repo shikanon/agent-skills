@@ -1,0 +1,4 @@
+interface:
+  display_name: "热歌搜索与下载"
+  short_description: "查询多平台热歌榜，通过 TXQQ 下载指定歌曲并验证本地音频"
+  default_prompt: "使用 $music-search 查询热歌，并通过 TXQQ 下载我指定的歌曲，核对版本和时长。"

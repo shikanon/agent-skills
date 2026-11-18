@@ -1,129 +1,44 @@
 # Agent Skills · 跨平台技能集
 
-收录公众号排版、内容制作、广告视频和 UI 测试等技能。每个技能目录提供自己的 `SKILL.md`，运行依赖见对应文档。
+收录微信公众号图文排版、热歌搜索与音乐下载等技能。每个技能目录提供自己的 `SKILL.md`，运行依赖见对应文档。
 
 ## 已收录技能列表
 
 | 技能名称 | 功能说明 |
 |---------|---------|
-| xiaohongshu-hot-content-generator | 自动生成小红书热门图文内容，支持搜索案例、生成4K图片、质量校验、飞书自动发送 |
-| ai-movie-generator | AI 电影生成器，支持剧本分析、角色设计、分镜生成、视频拼接全流程，5个Agent协作 |
-| adsflow | 广告爆款裂变工作流，输入长广告视频+替换图片+替换要求，自动完成视频切片、VLM图片识别、Seedance 2.0视频生成、视频对比检查、视频拼接 |
-| ui-tester | UI自动化测试技能，通过Playwright导航截图，VLM分析视觉信息，与UI需求对比发现差异，输出修复建议并持续迭代 |
 | [微信公众号 Skill](wechat-official-account/) | 微信公众号图文排版，支持主题组件、富文本复制预览和 HTML 兼容校验 |
-| 更多技能持续更新中... | |
-
----
-
-## AdsFlow 广告爆款裂变工作流
-
-🎬 基于 Seedance 2.0 + Seedream 5.0 + VLM 的广告视频爆款裂变技能。
-
-### 核心能力
-
-输入长广告视频、替换图片和替换要求，自动完成以下 5 步流程：
-
-```
-Step 0: 视频切片检查 → 超过15秒自动切片，记录每个切片时长（四舍五入取整）
-Step 1: VLM 识别替换图片 → 真人图片自动用 Seedream 5.0 图生图重新生成
-Step 2: Seedance 视频生成 → 输入参考视频（切片）+ 参考图 + 替换要求 + 视频时长
-Step 3: 视频对比检查 → VLM 对比原视频和替换后视频，评估5个维度，不合格自动重试
-Step 4: 视频拼接 → 多片段合并为最终视频
-```
-
-### 技术栈
-
-| 组件 | 模型/工具 | 用途 |
-|------|----------|------|
-| 视频生成 | Seedance 2.0 (`doubao-seedance-2-0-260128`) | 多模态参考视频生成、视频编辑 |
-| 图片生成 | Seedream 5.0 (`doubao-seedream-5-0-260128`) | 真人图片合规化图生图 |
-| 视觉理解 | VLM (`doubao-seed-2-0-pro-260215`) | 图片识别、视频对比检查 |
-| 视频处理 | FFmpeg | 切片、拼接、音频提取/合成 |
-
-### 使用方式
-
-```bash
-# 爆款裂变工作流
-python -m adsflow.main replace \
-  --video https://example.com/ad.mp4 \
-  --replace-images https://example.com/product.jpg \
-  --requirement "将视频中的香水替换为面霜，运镜不变"
-
-# 广告前贴工作流
-python -m adsflow.main prelude \
-  --video /path/to/ad.mp4 \
-  --duration 10
-```
-
-### 环境配置
-
-1. **安装依赖**：`pip install -r adsflow/requirements.txt`
-2. **系统依赖**：`brew install ffmpeg`（macOS）
-3. **配置环境变量**：复制 `adsflow/.env.example` 为 `adsflow/.env`，填入 `ARK_API_KEY`
-
----
-
-## UI Tester UI 自动化测试
-
-🔍 基于 Playwright MCP + VLM 的 UI 自动化测试技能。
-
-### 核心能力
-
-通过 Playwright 导航到任意网页截图，用 VLM 分析视觉信息，与 UI 需求对比发现差异，输出修复建议并持续迭代：
-
-```
-Step 1: 页面导航 → 使用 Playwright MCP 导航到目标页面（AI模型驱动中间操作）
-Step 2: 页面截图 → 对页面进行截图保存
-Step 3: 视觉分析 → 使用 VLM 分析截图，输出7维度详细视觉信息
-Step 4: 需求对比 → 将视觉信息与 UI 需求对比，发现差异
-Step 5: 输出报告 → 生成差异报告和修复建议（含CSS/HTML修改建议）
-Step 6: 迭代修复 → 根据建议修复，重新验证（循环）
-```
-
-### 技术栈
-
-| 组件 | 模型/工具 | 用途 |
-|------|----------|------|
-| 页面导航 | Playwright MCP | 导航、交互、截图 |
-| 视觉分析 | VLM (doubao-seed / GPT-4o) | 7维度视觉信息提取 |
-| 需求对比 | VLM | 差异发现和严重程度分级 |
-| 报告生成 | Python | Markdown 格式差异报告 |
-
-### 使用方式
-
-```bash
-# 分析截图
-python ui-tester/__main__.py analyze \
-  --screenshot /path/to/screenshot.png \
-  --vlm volcengine
-
-# 需求对比
-python ui-tester/__main__.py compare \
-  --analysis /path/to/analysis.json \
-  --requirement /path/to/ui_requirement.md
-
-# 生成报告
-python ui-tester/__main__.py report \
-  --comparison /path/to/comparison.json
-```
-
-### 环境配置
-
-1. **安装依赖**：`pip install -r ui-tester/requirements.txt`
-2. **配置环境变量**：复制 `ui-tester/.env.example` 为 `ui-tester/.env`，填入 `ARK_API_KEY` 或 `OPENAI_API_KEY`
-3. **Playwright MCP**：已内置于 Trae IDE，无需额外安装
-
----
+| [热歌搜索与音乐下载](music-search/) | 查询多平台热歌榜、新歌榜与飙升榜，按歌曲和歌手搜索，通过 TXQQ 下载指定版本，核对音频时长、完整解码与 SHA-256 |
 
 ## 使用说明
+
 1. 选择所需技能，保留整个目录及随附的脚本、参考文档和素材。
 2. 按 Codex、Claude Code 或其他支持 Agent Skills 的客户端说明安装该目录。
 3. 按各技能的文档准备运行环境、工具和所需的环境变量。
 
-## 环境变量配置
-使用技能前请配置以下环境变量：
-- `ARK_API_KEY`: 火山引擎Ark大模型API密钥
-- `OPENAI_API_KEY`: OpenAI API密钥（可选，UI测试技能需要）
-- `MODEL_VIDEO_NAME`: 视频生成模型ID（可选，视频类技能需要）
-- `VOLCENGINE_ACCESS_KEY`: 火山引擎Access Key（可选，部分服务需要）
-- `VOLCENGINE_SECRET_KEY`: 火山引擎Secret Key（可选，部分服务需要）
+## 热歌搜索与音乐下载
+
+`music-search/` 包含技能说明、界面配置和两个 Python 脚本。
+
+- `scripts/music_search.py` 查询歌曲及平台原生排行榜，保留平台、榜单顺序、歌曲 ID 和抓取时间。
+- `scripts/txqq_music.py` 通过 [music.txqq.pro](https://music.txqq.pro/) 搜索和解析歌曲，下载后核验媒体类型、时长、完整解码与哈希，并保存本地回执。
+
+运行依赖 Python 3.9+、[Go Music DL](https://github.com/guohuiyuan/go-music-dl) 和用于下载验证的 FFmpeg、ffprobe。Go Music DL 已验证版本为 v1.1.3，可从其官方 Releases 下载对应系统的 CLI，将 `music-dl` 加入 PATH，或通过 `MUSIC_DL_BIN` 指定位置。FFmpeg 与 ffprobe 可通过 PATH 或 `FFMPEG`、`FFPROBE` 环境变量指定。
+
+以安装到 `~/.codex/skills/music-search/` 为例：
+
+```bash
+# 查询当前新歌榜
+python3 ~/.codex/skills/music-search/scripts/music_search.py hot --sources netease --chart 新歌 --limit 10
+
+# 搜索并保存候选结果
+python3 ~/.codex/skills/music-search/scripts/txqq_music.py search '歌曲名 歌手' --source netease --output /tmp/music-search.json
+
+# 下载选中的结果，index 从 1 起
+python3 ~/.codex/skills/music-search/scripts/txqq_music.py download --receipt /tmp/music-search.json --index 1
+```
+
+默认下载目录为 `~/Downloads/资讯/音乐下载/`，可通过 `--outdir` 调整。平台可用性以当次查询与下载验证结果为准，具体使用方式见 [音乐技能说明](music-search/SKILL.md)。
+
+## 关联项目
+
+[Agent-Reach](https://github.com/Panniantong/Agent-Reach) 以 Git 子模块保留在 `Agent-Reach/`。
