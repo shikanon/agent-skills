@@ -1,0 +1,3 @@
+interface:
+  display_name: "多平台 Playwright 视频发布"
+  short_description: "上传视频号、抖音、快手和B站视频，检查上游并核验排期回执"

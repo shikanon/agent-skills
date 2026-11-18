@@ -1,0 +1,23 @@
+{
+  "wechat": {
+    "url": "https://github.com/wangzhaobo168/wechat-channels-upload.git",
+    "reviewed_commit": "ffcd78cea6bbc3462d89fa87aa55ca61d3c89b7f",
+    "local_checkout": "tools/wechat-channels-upload",
+    "reference_files": [
+      "SKILL.md",
+      "references/template-script.js",
+      "references/upload-flow.md"
+    ]
+  },
+  "douyin": {
+    "url": "https://github.com/dreammis/social-auto-upload.git",
+    "reviewed_commit": "0012d2c355f88f683cc38dde2a2db209e14091bc",
+    "local_checkout": "tools/social-auto-upload",
+    "reference_files": [
+      "uploader/douyin_uploader/main.py",
+      "skills/douyin-upload/SKILL.md",
+      "uploader/ks_uploader/main.py",
+      "uploader/bilibili_uploader/runtime.py"
+    ]
+  }
+}
